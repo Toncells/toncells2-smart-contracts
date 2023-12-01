@@ -70,7 +70,7 @@ export function encodeOffChainContent(content: any) {
     return makeSnakeCell(data);
 }
 export function encodeOnChainPic(content: any) {
-    const file = './img2.png'
+    const file = './img.png'
     const img = fs.readFileSync(file);
     console.log(img)
     let data = Buffer.from(img);
@@ -86,7 +86,7 @@ export function bufferToBigInt(buffer: any) {
 }
 
 export async function toncellsConfigToCell(config: ToncellsConfig): Promise<Cell> {
-    return beginCell().storeUint(2, 64).storeAddress(null).endCell()
+    return beginCell().storeUint(1, 64).storeAddress(null).endCell()
 }
 
 export class Item implements Contract {
@@ -105,23 +105,31 @@ export class Item implements Contract {
     async sendDeploy(provider: ContractProvider, via: Sender, value: bigint) {
         const dict = Dictionary.empty(Dictionary.Keys.BigUint(256), Dictionary.Values.Cell());
 
-        dict.set(bufferToBigInt(sha256_sync('description')), encodeOffChainContent('that was onchain cat that evolved to onchain dog.'));
-        dict.set(bufferToBigInt(sha256_sync('name')), encodeOffChainContent('THIS IS NOT A CAT THIS IS A DOG'));
+        dict.set(bufferToBigInt(sha256_sync('description')), encodeOffChainContent('this is onchain cat.'));
+        dict.set(bufferToBigInt(sha256_sync('name')), encodeOffChainContent('cat'));
         dict.set(bufferToBigInt(sha256_sync('image_data')), encodeOnChainPic('1'));
-
+        //to edit nft
+        // beginCell()
+        //     .storeUint(0x1a0b9d51, 32)
+        //     .storeUint(0, 64)
+        //     // .storeAddress(null)
+        //     .storeRef(beginCell()
+        //         .storeInt(0x00, 8)
+        //         .storeDict(dict)
+        //         .endCell())
+        //     // .storeAddress(Address.parseFriendly("EQACELBSnsN24mT_LzaBZQUp78I6Bt9qdVt2R57Crh8TSuLm").address)
+        //     .endCell()
         await provider.internal(via, {
             value,
             sendMode: SendMode.PAY_GAS_SEPARATELY,
             body:
                 beginCell()
-                    .storeUint(0x1a0b9d51, 32)
-                    .storeUint(0, 64)
-                    // .storeAddress(null)
+                    .storeAddress(null)
                     .storeRef(beginCell()
                         .storeInt(0x00, 8)
                         .storeDict(dict)
                         .endCell())
-                    // .storeAddress(Address.parseFriendly("EQACELBSnsN24mT_LzaBZQUp78I6Bt9qdVt2R57Crh8TSuLm").address)
+                    .storeAddress(Address.parseFriendly("EQACELBSnsN24mT_LzaBZQUp78I6Bt9qdVt2R57Crh8TSuLm").address)
                     .endCell()
         });
     }
