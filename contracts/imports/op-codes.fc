@@ -10,4 +10,6 @@ int op::report_royalty_params() asm "0xa8cb00ad PUSHINT";
 int op::edit_content() asm "0x1a0b9d51 PUSHINT";
 int op::transfer_editorship() asm "0x1c04412a PUSHINT";
 int op::editorship_assigned() asm "0x511a4463 PUSHINT";
-
+int op::nft_response() asm "0x69 PUSHINT";
+int op::fees() asm "0x6a PUSHINT";
+int op::return_failed_mint() asm "0x6b PUSHINT";
