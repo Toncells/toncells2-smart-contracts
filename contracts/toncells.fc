@@ -150,8 +150,7 @@ slice calculate_nft_item_address(int wc, cell state_init) {
 
 (int, cell, slice) get_collection_data() method_id {
   var (owner_address, next_item_index, content, _, _) = load_data();
-  cell cs = content;
-  return (next_item_index, cs, owner_address);
+  return (-1, content, owner_address);
 }
 
 slice get_nft_address_by_index(int index) method_id {
@@ -167,10 +166,6 @@ slice get_nft_address_by_index(int index) method_id {
 }
 
 cell get_nft_content(int index, cell individual_nft_content) method_id {
-  var (_, _, content, _, _) = load_data();
-  return (begin_cell()
-                      .store_uint(0, 8) ;; offchain tag
-                      .store_ref(individual_nft_content)
-          .end_cell());
+  return (individual_nft_content);
 }
 

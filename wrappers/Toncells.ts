@@ -89,9 +89,9 @@ export async function toncellsConfigToCell(config: ToncellsConfig): Promise<Cell
     const dict = Dictionary.empty(Dictionary.Keys.BigUint(256), Dictionary.Values.Cell());
 
     dict.set(bufferToBigInt(sha256_sync('description')), encodeOffChainContent('onchain editable cats nft collection'));
-    dict.set(bufferToBigInt(sha256_sync('name')), encodeOffChainContent('onchain cats'));
-    dict.set(bufferToBigInt(sha256_sync('image_data')), encodeOnChainPic('1'));
-    // dict.set(bufferToBigInt(sha256_sync('image')), encodeOffChainContent("ipfs://QmZNKUuHWBACoEikPjmz12njg3btdm6uuFMetpx6jeYr8R"));
+    dict.set(bufferToBigInt(sha256_sync('name')), encodeOffChainContent('onchain upgradable cats'));
+    // dict.set(bufferToBigInt(sha256_sync('image_data')), encodeOnChainPic('1'));
+    dict.set(bufferToBigInt(sha256_sync('image')), encodeOffChainContent("ipfs://QmSs23ET5m2Z1XMWePZcMJJx1th5VtM6w8jpGM63roeEJV"));
     const code = await compile('Item');
 
     return beginCell()
@@ -102,7 +102,7 @@ export async function toncellsConfigToCell(config: ToncellsConfig): Promise<Cell
             .storeDict(dict)
             .endCell())
         .storeRef(code)
-        .storeRef(beginCell().storeUint(0, 16).storeUint(0, 16).storeAddress(Address.parse("UQBUL9aM4IKaBerYv8hZP1qLgRnEPnV2DYswO0aGsywZHpiT")).endCell())
+        .storeRef(beginCell().storeUint(0, 16).storeUint(0, 16).storeAddress(Address.parse("EQACELBSnsN24mT_LzaBZQUp78I6Bt9qdVt2R57Crh8TSuLm")).endCell())
         .endCell()
 }
 
@@ -130,7 +130,7 @@ export class Toncells implements Contract {
             body: beginCell()
                 .storeUint(1, 32)
                 .storeUint(1, 64)
-                .storeUint(1, 64)
+                .storeUint(666, 64)
                 .storeRef(beginCell()
                     .storeAddress(Address.parseFriendly("EQACELBSnsN24mT_LzaBZQUp78I6Bt9qdVt2R57Crh8TSuLm").address)
                     .storeRef(beginCell()
