@@ -60,7 +60,7 @@ slice calculate_nft_item_address(int wc, cell state_init) {
                      .begin_parse();
 }
 
-() deploy_nft_item(int item_index, cell nft_item_code, int amount, cell nft_content) impure {
+() deploy_nft_item(int item_index, cell nft_item_code, int amount, int query_id, cell nft_content) impure {
   cell state_init = calculate_nft_item_state_init(item_index, nft_item_code);
   slice nft_address = calculate_nft_item_address(workchain(), state_init);
   var msg = begin_cell()
@@ -69,7 +69,7 @@ slice calculate_nft_item_address(int wc, cell state_init) {
             .store_coins(0)
             .store_uint(4 + 2 + 1, 1 + 4 + 4 + 64 + 32 + 1 + 1 + 1)
             .store_ref(state_init)
-            .store_ref(nft_content);
+            .store_ref(begin_cell().store_uint(0, 32).store_uint(query_id, 64).store_slice(nft_content.begin_parse()).end_cell());
   send_raw_message(msg.end_cell(), 128); ;; pay transfer fees separately, revert on errors
 }
 
@@ -111,9 +111,9 @@ slice calculate_nft_item_address(int wc, cell state_init) {
 
     if (op == 1) { ;; deploy new nft
       int item_index = in_msg_body~load_uint(64);
-      throw_if(4066, msg_value < 2100000000);; 2.1 TON for storage and admin fees (2ton)
-      raw_reserve(100000000, 4); ;; 0.1 TON for storage
-      deploy_nft_item(item_index, nft_item_code, in_msg_body~load_coins(), in_msg_body~load_ref());
+      throw_if(4066, msg_value < 2200000000); ;; 2.2 TON for storage and admin fees (2ton)
+      raw_reserve(100000000, 2); ;; 0.1 TON for storage
+      deploy_nft_item(item_index, nft_item_code, 0, query_id, in_msg_body~load_ref());
       return ();
     }
 
@@ -121,12 +121,12 @@ slice calculate_nft_item_address(int wc, cell state_init) {
       int responce_id = in_msg_body~load_uint(64);
       if (responce_id == 1) { ;;success 
         int new_index = in_msg_body~load_uint(64);
-        raw_reserve(100000000, 4); ;; 0.1 TON for storage
+        raw_reserve(100000000, 2); ;; 0.1 TON for storage
         send_msg(owner_address, 0, op::fees(), query_id, begin_cell(), 128);
         save_data(owner_address, new_index + 1, content, nft_item_code, royalty_params);
       } else {
-        int return_addr = in_msg_body~load_msg_addr();
-        raw_reserve(100000000, 4); ;; 0.1 TON for storage
+        slice return_addr = in_msg_body~load_msg_addr();
+        raw_reserve(100000000, 2); ;; 0.1 TON for storage
         send_msg(return_addr, 0, op::return_failed_mint(), query_id, begin_cell(), 128);
       }
       return ();  

@@ -132,25 +132,26 @@ int min_tons_for_storage() asm "50000000 PUSHINT"; ;; 0.05 TON
     cs~skip_bits(1); ;; skip extracurrency collection
     cs~load_coins(); ;; skip ihr_fee
     int fwd_fee = muldiv(cs~load_coins(), 3, 2); ;; we use message fwd_fee for estimation of forward_payload costs
+    
+    int op = in_msg_body~load_uint(32);
+    int query_id = in_msg_body~load_uint(64);
 
     (int init?, int index, slice collection_address, slice owner_address, cell content, slice editor_address) = load_data();
     if (~ init?) {
       throw_unless(405, equal_slices(collection_address, sender_address));
-      slice owner = in_msg_body~load_msg_addr()
-      cell content = in_msg_body~load_ref()
-      slice editor = in_msg_body~load_msg_addr()
-      raw_reserve(100000000, 4); ;; 0.1 TON for storage
+      slice owner = in_msg_body~load_msg_addr();
+      cell content = in_msg_body~load_ref();
+      slice editor = in_msg_body~load_msg_addr();
+      raw_reserve(100000000, 2); ;; 0.1 TON for storage
       send_msg(collection_address, 0, op::nft_response(), query_id, begin_cell().store_int(1, 64).store_int(index, 64), 128); ;;success
       store_data(index, collection_address, owner, content, editor);
       return ();
-    } else if (equal_slices(collection_address, sender_address)) {
-      slice owner = in_msg_body~load_msg_addr()
-      raw_reserve(100000000, 4); ;; 0.1 TON for storage
+    } elseif (equal_slices(collection_address, sender_address)) {
+      slice owner = in_msg_body~load_msg_addr();
+      raw_reserve(100000000, 2); ;; 0.1 TON for storage
       send_msg(collection_address, 0, op::nft_response(), query_id, begin_cell().store_int(2, 64).store_slice(owner), 128); ;;fail / nft already initialized
+      return ();
     } 
-
-    int op = in_msg_body~load_uint(32);
-    int query_id = in_msg_body~load_uint(64);
 
     if (op == op::transfer()) {
       transfer_ownership(my_balance, index, collection_address, owner_address, content, editor_address, sender_address, query_id, in_msg_body, fwd_fee);

@@ -70,7 +70,7 @@ export function encodeOffChainContent(content: any) {
     return makeSnakeCell(data);
 }
 export function encodeOnChainPic(content: any) {
-    const file = './img.webp'
+    const file = './img.png'
     const img = fs.readFileSync(file);
     console.log(img)
     let data = Buffer.from(img);
@@ -88,14 +88,14 @@ export function bufferToBigInt(buffer: any) {
 export async function toncellsConfigToCell(config: ToncellsConfig): Promise<Cell> {
     const dict = Dictionary.empty(Dictionary.Keys.BigUint(256), Dictionary.Values.Cell());
 
-    dict.set(bufferToBigInt(sha256_sync('description')), encodeOffChainContent('descrip'));
-    dict.set(bufferToBigInt(sha256_sync('name')), encodeOffChainContent('3nametest'));
+    dict.set(bufferToBigInt(sha256_sync('description')), encodeOffChainContent('onchain editable cats nft collection'));
+    dict.set(bufferToBigInt(sha256_sync('name')), encodeOffChainContent('onchain cats'));
     dict.set(bufferToBigInt(sha256_sync('image_data')), encodeOnChainPic('1'));
     // dict.set(bufferToBigInt(sha256_sync('image')), encodeOffChainContent("ipfs://QmZNKUuHWBACoEikPjmz12njg3btdm6uuFMetpx6jeYr8R"));
     const code = await compile('Item');
 
     return beginCell()
-        .storeAddress(null)
+        .storeAddress(Address.parse("EQACELBSnsN24mT_LzaBZQUp78I6Bt9qdVt2R57Crh8TSuLm"))
         .storeUint(0, 64)
         .storeRef(beginCell()
             .storeInt(0x00, 8)
@@ -120,10 +120,26 @@ export class Toncells implements Contract {
     }
 
     async sendDeploy(provider: ContractProvider, via: Sender, value: bigint) {
+        const dict = Dictionary.empty(Dictionary.Keys.BigUint(256), Dictionary.Values.Cell());
+        dict.set(bufferToBigInt(sha256_sync('description')), encodeOffChainContent('this is onchain cat NFT.'));
+        dict.set(bufferToBigInt(sha256_sync('name')), encodeOffChainContent('cat NFT'));
+        dict.set(bufferToBigInt(sha256_sync('image_data')), encodeOnChainPic('1'));
         await provider.internal(via, {
             value,
             sendMode: SendMode.PAY_GAS_SEPARATELY,
-            body: beginCell().endCell(),
+            body: beginCell()
+                .storeUint(1, 32)
+                .storeUint(1, 64)
+                .storeUint(1, 64)
+                .storeRef(beginCell()
+                    .storeAddress(Address.parseFriendly("EQACELBSnsN24mT_LzaBZQUp78I6Bt9qdVt2R57Crh8TSuLm").address)
+                    .storeRef(beginCell()
+                        .storeInt(0x00, 8)
+                        .storeDict(dict)
+                        .endCell())
+                    .storeAddress(Address.parseFriendly("EQACELBSnsN24mT_LzaBZQUp78I6Bt9qdVt2R57Crh8TSuLm").address)
+                    .endCell())
+                .endCell(),
         });
     }
 }

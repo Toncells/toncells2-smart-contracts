@@ -6,7 +6,7 @@ import { compile, NetworkProvider } from '@ton/blueprint';
 export async function run(provider: NetworkProvider) {
     const toncells = provider.open(await Toncells.createFromConfig({}, await compile('Toncells')));
 
-    await toncells.sendDeploy(provider.sender(), toNano('0.05'));
+    await toncells.sendDeploy(provider.sender(), toNano('2.25'))
 
     await provider.waitForDeploy(toncells.address);
 
