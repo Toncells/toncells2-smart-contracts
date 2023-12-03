@@ -88,10 +88,9 @@ export function bufferToBigInt(buffer: any) {
 export async function toncellsConfigToCell(config: ToncellsConfig): Promise<Cell> {
     const dict = Dictionary.empty(Dictionary.Keys.BigUint(256), Dictionary.Values.Cell());
 
-    dict.set(bufferToBigInt(sha256_sync('description')), encodeOffChainContent('onchain editable cats nft collection'));
-    dict.set(bufferToBigInt(sha256_sync('name')), encodeOffChainContent('onchain upgradable cats'));
-    // dict.set(bufferToBigInt(sha256_sync('image_data')), encodeOnChainPic('1'));
-    dict.set(bufferToBigInt(sha256_sync('image')), encodeOffChainContent("ipfs://QmSs23ET5m2Z1XMWePZcMJJx1th5VtM6w8jpGM63roeEJV"));
+    dict.set(bufferToBigInt(sha256_sync('description')), encodeOffChainContent('This is upgradable nft collection (onemilliondollarhomepage - like) with onchain nft pictures storage!'));
+    dict.set(bufferToBigInt(sha256_sync('name')), encodeOffChainContent('Cells'));
+    dict.set(bufferToBigInt(sha256_sync('image')), encodeOffChainContent("ipfs://QmNxQ3G19MQkzKotVsQZAJJPeo5crz2C3mxDJetN1D6ode"));
     const code = await compile('Item');
 
     return beginCell()
@@ -121,9 +120,9 @@ export class Toncells implements Contract {
 
     async sendDeploy(provider: ContractProvider, via: Sender, value: bigint) {
         const dict = Dictionary.empty(Dictionary.Keys.BigUint(256), Dictionary.Values.Cell());
-        dict.set(bufferToBigInt(sha256_sync('description')), encodeOffChainContent('this is onchain cat NFT.'));
-        dict.set(bufferToBigInt(sha256_sync('name')), encodeOffChainContent('cat NFT'));
-        dict.set(bufferToBigInt(sha256_sync('image_data')), encodeOnChainPic('1'));
+        dict.set(bufferToBigInt(sha256_sync('description')), encodeOffChainContent('This is upgradable nft collection'));
+        dict.set(bufferToBigInt(sha256_sync('name')), encodeOffChainContent('Cells'));
+        //        dict.set(bufferToBigInt(sha256_sync('image_data')), encodeOnChainPic('1'));
         await provider.internal(via, {
             value,
             sendMode: SendMode.PAY_GAS_SEPARATELY,

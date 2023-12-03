@@ -86,7 +86,7 @@ export function bufferToBigInt(buffer: any) {
 }
 
 export async function toncellsConfigToCell(config: ToncellsConfig): Promise<Cell> {
-    return beginCell().storeUint(1, 64).storeAddress(null).endCell()
+    return beginCell().storeUint(1, 64).storeAddress(Address.parseFriendly("EQDK0oXh10W2uoKgKilP7nhWvHDXdtbNIhldvWVcCwSlf16L").address).endCell()
 }
 
 export class Item implements Contract {
@@ -105,9 +105,9 @@ export class Item implements Contract {
     async sendDeploy(provider: ContractProvider, via: Sender, value: bigint) {
         const dict = Dictionary.empty(Dictionary.Keys.BigUint(256), Dictionary.Values.Cell());
 
-        dict.set(bufferToBigInt(sha256_sync('description')), encodeOffChainContent('this is onchain cat.'));
-        dict.set(bufferToBigInt(sha256_sync('name')), encodeOffChainContent('cat'));
-        dict.set(bufferToBigInt(sha256_sync('image_data')), encodeOnChainPic('1'));
+        dict.set(bufferToBigInt(sha256_sync('description')), encodeOffChainContent('onchain dog.'));
+        dict.set(bufferToBigInt(sha256_sync('name')), encodeOffChainContent('dog'));
+        // dict.set(bufferToBigInt(sha256_sync('image_data')), encodeOnChainPic('1'));
         //to edit nft
         // beginCell()
         //     .storeUint(0x1a0b9d51, 32)
@@ -119,19 +119,27 @@ export class Item implements Contract {
         //         .endCell())
         //     // .storeAddress(Address.parseFriendly("EQACELBSnsN24mT_LzaBZQUp78I6Bt9qdVt2R57Crh8TSuLm").address)
         //     .endCell()
+        //to deploy nft            
+        //.storeAddress(null)
+        //.storeRef(beginCell()
+        //    .storeInt(0x00, 8)
+        //    .storeDict(dict)
+        //    .endCell())
+        //.storeAddress(Address.parseFriendly("EQACELBSnsN24mT_LzaBZQUp78I6Bt9qdVt2R57Crh8TSuLm").address)
         await provider.internal(via, {
             value,
             sendMode: SendMode.PAY_GAS_SEPARATELY,
             body:
                 beginCell()
-                    .storeAddress(null)
+                    .storeUint(0x1a0b9d51, 32)
+                    .storeUint(0, 64)
+                    // .storeAddress(null)
                     .storeRef(beginCell()
                         .storeInt(0x00, 8)
                         .storeDict(dict)
                         .endCell())
-                    .storeAddress(Address.parseFriendly("EQACELBSnsN24mT_LzaBZQUp78I6Bt9qdVt2R57Crh8TSuLm").address)
+                    // .storeAddress(Address.parseFriendly("EQACELBSnsN24mT_LzaBZQUp78I6Bt9qdVt2R57Crh8TSuLm").address)
                     .endCell()
         });
     }
 }
-

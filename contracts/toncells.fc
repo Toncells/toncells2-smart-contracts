@@ -154,15 +154,15 @@ slice calculate_nft_item_address(int wc, cell state_init) {
 }
 
 slice get_nft_address_by_index(int index) method_id {
-    var (_, _, _, nft_item_code, _) = load_data();
-    cell state_init = calculate_nft_item_state_init(index, nft_item_code);
-    return calculate_nft_item_address(workchain(), state_init);
+  var (_, _, _, nft_item_code, _) = load_data();
+  cell state_init = calculate_nft_item_state_init(index, nft_item_code);
+  return calculate_nft_item_address(workchain(), state_init);
 }
 
 (int, int, slice) royalty_params() method_id {
-     var (_, _, _, _, royalty) = load_data();
-     slice rs = royalty.begin_parse();
-     return (rs~load_uint(16), rs~load_uint(16), rs~load_msg_addr());
+  var (_, _, _, _, royalty) = load_data();
+  slice rs = royalty.begin_parse();
+  return (rs~load_uint(16), rs~load_uint(16), rs~load_msg_addr());
 }
 
 cell get_nft_content(int index, cell individual_nft_content) method_id {
